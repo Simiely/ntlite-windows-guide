@@ -48,5 +48,6 @@
 
 | 文档 | 给谁看 | 内容 |
 |---|---|---|
+| [`DEVELOPMENT.md`](./DEVELOPMENT.md) | 开发者 | 架构说明 + 7 条关键坑（一坑一篇） |
 | [`AGENTS.md`](./AGENTS.md) | AI / 未来的你 | 关键坑（预设/断网/兼容性开关）+ 流程要点 |
 | [`CHANGELOG.md`](./CHANGELOG.md) | 所有人 | 版本变更记录 |
