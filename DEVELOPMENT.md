@@ -14,7 +14,7 @@
 - **读者分流**：使用者看 `README.md` + `index.html`；AI / 未来的你看 `AGENTS.md`（关键坑速查）；本文件记录「为什么这么做」。
 - **事实源**：流程清单只在 `README.md` 与 `index.html` 两处维护，改一处必须同步另一处。
 - **无生成步骤**：`index.html` 手工维护，不走模板、不依赖构建脚本，提交即上线。
-- **无机器层**：纯文档 link-only 场景，未安装 repo-kit / CI 校验，链接靠人工核对。
+- **机器层**：repo-kit v2.9.0（规范 v2.1.4，`link-only` 档）。结构与链接由 `check_repo.py` 校验，kit 完整性由 `update-repo-kit.ps1 -Check` 校验，推送后由 CI 自动执行——见「四、校验与 CI」。
 
 ## 三、关键问题与方案（一坑一篇）
 
@@ -90,7 +90,24 @@
 - 解决：加载既有预设后按目标环境微调。
 - 预防：验证出新组合时另存为带日期的新预设。
 
-## 四、后续可做
+## 四、校验与 CI
+
+仓库已接入 repo-kit **v2.9.0**（单项目规范 **v2.1.4**，`link-only` 档）。
+
+| 动作 | 命令 | 查什么 |
+|---|---|---|
+| 结构 / 链接不变式 | `python tools/repo-kit/check_repo.py --root .` | 四件套齐全、行数上限、相对链接可解析、无孤儿页 |
+| kit 未被篡改 | `pwsh tools/update-repo-kit.ps1 -Check` | `schema/kit.lock.json` 里 4 个文件的 SHA256 |
+| 升级 kit | `pwsh tools/update-repo-kit.ps1 -Source <kit源> -Profile link-only` | 重新拷贝 kit 文件并重写 lock |
+
+- 依赖只三件：`PyYAML>=6.0`、`markdown-it-py>=3.0`、`jsonschema>=4.20`。本仓没有 `requirements.txt`，
+  CI 里显式安装，**不为了检查引入打包清单**。
+- `schema/taxonomy.json` 由本仓自有（kit 不覆盖）：`include` 只列四件套 + `docs/**`，历史内容不进扫描面，
+  避免把「维持一份可维护的文档」变成「一次性大改写」。
+- `generated_files` 为空数组 → 无生成物，也就不存在「生成器覆盖手写 AGENTS.md」那类冲突。
+- `index.html` 不在扫描面内，Pages 页面与离线查看方式不受影响。
+
+## 五、后续可做
 
 - 把预设文件纳入仓库并写明适用环境，避免只留在本地。
 - 与 `windows-ltsc-guide` 交叉引用底包选型结论。
